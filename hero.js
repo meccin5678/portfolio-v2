@@ -63,7 +63,7 @@ const drawWideHero = (heroArt, timestamp) => {
     return;
   }
 
-  const pixelRatio = Math.min(window.devicePixelRatio || 1, 2);
+  const pixelRatio = Math.min(window.devicePixelRatio || 1, 1.5);
   const pixelWidth = Math.round(width * pixelRatio);
   const pixelHeight = Math.round(height * pixelRatio);
 
@@ -84,7 +84,7 @@ const drawWideHero = (heroArt, timestamp) => {
   ) + 36;
 
   for (let index = 0; index < 6; index += 1) {
-    const progress = (timestamp / 7200 + index / 6) % 1;
+    const progress = (timestamp / 10800 + index / 6) % 1;
     const radius = 18 + progress * spread;
     const fade = 1 - progress;
     const color = colors[index % colors.length];
@@ -125,6 +125,8 @@ const drawWideHero = (heroArt, timestamp) => {
 if (heroArtElements.length > 0) {
   const visibleHeroArts = new Set();
   let animationFrame = 0;
+  let lastFrameTime = 0;
+  const minimumFrameInterval = 1000 / 30;
 
   heroArtElements.forEach((heroArt) => {
     if (heroArt.classList.contains("hero-art-wide")) {
@@ -150,6 +152,13 @@ if (heroArtElements.length > 0) {
   }
 
   const animateLight = (timestamp) => {
+    if (timestamp - lastFrameTime < minimumFrameInterval) {
+      animationFrame = window.requestAnimationFrame(animateLight);
+      return;
+    }
+
+    lastFrameTime = timestamp;
+
     visibleHeroArts.forEach((heroArt) => {
       if (heroArt.classList.contains("hero-art-wide")) {
         drawWideHero(heroArt, timestamp);
